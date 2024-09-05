@@ -1,62 +1,77 @@
 #include <iostream>
-#include <string>
-#include <string.h>
 #include <vector>
-#include <queue>
-#include <climits>
+#include <string>
 #include <algorithm>
-#define MAX 1000001
+#define MAX 10001
+#define FASTIO cin.tie(0); cout.tie(0); ios::sync_with_stdio(false);
 
 using namespace std;
-int V, E;
-int parent[MAX];
-vector<pair<int, pair<int, int> > > vec;
-int answer = 0;
+struct INFO {
+    int A, B, C;
+};
 
-void init() {
-	for (int i = 1; i <= V; i++) {
-		parent[i] = -1;
-	}
+int V, E, A, B, C;
+vector<INFO> Edges;
+int Parent[MAX];
+int Answer;
+
+void input() {
+    cin >> V >> E;
+    for (int i = 0; i < E; i++) {
+        cin >> A >> B >> C;
+        Edges.push_back({ A,B,C });
+    }
+    for (int i = 0; i < V; i++) {
+        Parent[i] = i;
+    }
 }
 
-int Find(int X) {
-	if (parent[X] < 0) {
-		return X;
-	}
-	int pa = Find(parent[X]);
-	return pa;
+int find_Parent(int X) {
+    if (Parent[X] == X) {
+        return X;
+    }
+
+    return Parent[X] = find_Parent(Parent[X]);
 }
 
-void Union_Set(int X, int Y) {
-	int P_X = Find(X);
-	int P_Y = Find(Y);
-	if (P_X != P_Y) {
-		parent[P_Y] = P_X;
-	}
+void union_Group(int X, int Y) {
+    int ParentX = find_Parent(X);
+    int ParentY = find_Parent(Y);
+
+    if (ParentX < ParentY) {
+        Parent[ParentY] = ParentX;
+    }
+    else {
+        Parent[ParentX] = ParentY;
+    }
 }
 
-int main() {
-	cin.tie(NULL);
-	ios::sync_with_stdio(false);
+bool comp(INFO A, INFO B) {
+    return (A.C < B.C);
+}
 
-	cin >> V >> E;
-	for (int i = 0; i < E; i++) {
-		int A, B, C;
-		cin >> A >> B >> C;
-		vec.push_back(make_pair(C, make_pair(A, B)));
-	}
-	sort(vec.begin(), vec.end());
-	init();
-	for (int i = 0; i < E; i++) {
-		int A = vec[i].second.first;
-		int B = vec[i].second.second;
-		int C = vec[i].first;
-		if (Find(A) != Find(B)) {
-			Union_Set(A, B);
-			answer += C;
-		}
-	}
-	cout << answer << "\n";
+void settings() {
+    sort(Edges.begin(), Edges.end(), comp);
+    for (int i = 0; i < E; i++) {
+        int From = Edges[i].A;
+        int To = Edges[i].B;
+        int Cost = Edges[i].C;
+        if (find_Parent(From) != find_Parent(To)) {
+            union_Group(From, To);
+            Answer += Cost;
+        }
+    }
+}
 
-	return 0;
+void find_Answer() {
+    cout << Answer << "\n";
+}
+
+int main() {    
+    FASTIO
+    input();
+    settings();
+    find_Answer();
+
+    return 0;
 }
