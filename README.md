@@ -1,2 +1,7 @@
-# AlgorithmPractice
-This is an auto push repository for Baekjoon Online Judge created with [BaekjoonHub](https://github.com/BaekjoonHub/BaekjoonHub).
+# :scroll: 알고리즘 문제 풀이
+## BOJ
+[BOJ](https://www.acmicpc.net/user/littlesam95)
+
+## SWEA
+
+## Programmers
