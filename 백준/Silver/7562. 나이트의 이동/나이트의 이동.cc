@@ -2,82 +2,85 @@
 #include <string>
 #include <vector>
 #include <queue>
-#include <unordered_set>
+#include <cmath>
 #include <algorithm>
-#include <utility>
+#define MAX 301
+#define INF 1e9
+#define FASTIO cin.tie(NULL); cout.tie(NULL); ios::sync_with_stdio(false);
 
 using namespace std;
-
-int T, I;
-int arr[301][301] = { 0, };
-bool visited[301][301] = { false, };
-int moveY[8] = { -1,-2,-2,-1,1,2,2,1 };
-int moveX[8] = { -2,-1,1,2,2,1,-1,-2 };
-int res;
+int T, N, Y, X, TY, TX;
+bool Visited[MAX][MAX];
+int MoveY[8] = { -1,-2,-2,-1,1,2,2,1 }; // 8방향 행 이동
+int MoveX[8] = { -2,-1,1,2,2,1,-1,-2 }; // 8방향 열 이동
+int Answer;
+vector<int> Answers;
 
 void init() {
-	res = 2147483647;
-	for (int i = 0; i < I; i++) {
-		for (int j = 0; j < I; j++) {
-			arr[i][j] = 0;
-			visited[i][j] = false;
+	for (int i = 0; i < MAX; i++) {
+		for (int j = 0; j < MAX; j++) {
+			Visited[i][j] = false;
+		}
+	}
+	Answer = INF;
+}
+
+void bfs() {
+	queue<pair<pair<int, int>, int> > Q;
+	Visited[Y][X] = true;
+	Q.push(make_pair(make_pair(Y, X), 0));
+
+	while (!Q.empty()) {
+		int NowY = Q.front().first.first;
+		int NowX = Q.front().first.second;
+		int NowC = Q.front().second; // 지금까지의 이동 횟수
+		Q.pop();
+
+		if ((NowY == TY) && (NowX == TX)) {
+			Answer = min(Answer, NowC);
+			return;
+		}
+
+		for (int i = 0; i < 8; i++) {
+			int NextY = NowY + MoveY[i];
+			int NextX = NowX + MoveX[i];
+			if ((NextY >= 0) && (NextY < N) && (NextX >= 0) && (NextX < N) && !Visited[NextY][NextX]) {
+				Visited[NextY][NextX] = true;
+				Q.push(make_pair(make_pair(NextY, NextX), NowC + 1));
+			}
 		}
 	}
 }
 
-void bfs(int y, int x) {
-	int count = 0;
-	queue<pair<pair<int, int>, int> > q;
-	visited[y][x] = true;
-	q.push(make_pair(make_pair(y, x), count));
+void settings() {
+	bfs();
+}
 
-	while (!q.empty()) {
-		int nowY = q.front().first.first;
-		int nowX = q.front().first.second;
-		int nowCount = q.front().second;
-		q.pop();
+void find_Answer() {
+	Answers.push_back(Answer);
+}
 
-		if (arr[nowY][nowX] == 2) {
-			if (res > nowCount) {
-				res = nowCount;
-			}
-		}
-		else {
-			nowCount++;
-			for (int i = 0; i < 8; i++) {
-				int nextY = nowY + moveY[i];
-				int nextX = nowX + moveX[i];
-				if ((nextY >= 0) && (nextY < I) && (nextX >= 0) && (nextX < I)) {
-					if ((!visited[nextY][nextX])) {
-						visited[nextY][nextX] = true;
-						q.push(make_pair(make_pair(nextY, nextX), nowCount));
-					}
-				}
-			}
-		}
-	};
+void input() {
+	cin >> T;
+	for (int t = 1; t <= T; t++) {
+		init();
+		cin >> N;
+		cin >> Y >> X >> TY >> TX;
+		settings();
+		find_Answer();
+	}
+}
+
+void print_Answer() {
+	for (int i = 0; i < (int)Answers.size(); i++) {
+		cout << Answers[i] << "\n";
+	}
 }
 
 int main() {
-	cin.tie(NULL);
-	cout.tie(NULL);
-	ios::sync_with_stdio(false);
-
-	cin >> T;
-	while (T--) {
-		init();
-		cin >> I;
-		int n1, n2;
-		cin >> n1 >> n2;
-		arr[n1][n2] = 1;
-		int n3, n4;
-		cin >> n3 >> n4;
-		arr[n3][n4] = 2;
-
-		bfs(n1, n2);
-
-		cout << res << "\n";
-	};
+	FASTIO
+	input();
+	print_Answer();
 
 	return 0;
 }
